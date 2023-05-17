@@ -2,7 +2,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 import style_home
 import Face_Recognize
-
+import Register
 
 ctk.set_appearance_mode("dark")
 
@@ -12,7 +12,7 @@ class App:
         self.root.geometry("1024x600")
         self.root.title('Home')
 
-        self.get_image = Image.open("GUI_images/HOME_GUI.png")
+        self.get_image = Image.open("GUI_images/home_background.png")
         self.background_image = ImageTk.PhotoImage(self.get_image)
 
         self.background_label = ctk.CTkLabel(self.root, image=self.background_image, text="")
@@ -35,7 +35,7 @@ class App:
         pass
 
     def register(self):
-        pass
+        Register.register_window(self.root).mainloop()
         
 
     def recognize(self):
