@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-class Face_Recognition_Window(ctk.CTkToplevel):
+class face_recog_window(ctk.CTkToplevel):
     def __init__(self, master):
         super().__init__(master)
         self.geometry("1024x600")
@@ -8,3 +8,16 @@ class Face_Recognition_Window(ctk.CTkToplevel):
         self.attributes('-topmost', True)
 
         
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    root = ctk.CTk()
+    app = face_recog_window(root)
+    app.mainloop()      

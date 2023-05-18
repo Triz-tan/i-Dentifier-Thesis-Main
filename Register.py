@@ -2,12 +2,11 @@ import customtkinter as ctk
 import style_register as style
 import cv2
 from PIL import Image, ImageTk
-from Home import App
 import os
 import tkinter
 from tkinter import messagebox
 import openpyxl
-
+import Face_Recognize
 
 class register_window(ctk.CTkToplevel):
     
@@ -18,16 +17,10 @@ class register_window(ctk.CTkToplevel):
         self.attributes('-topmost', True)
 
         self.register_label_heading = ctk.CTkLabel(self, text="Register", font=('Poppins', 24), text_color="white")
-        self.register_label_heading.place(x=28, y=32)
+        self.register_label_heading.place(x=432.5, y=21.5)
 
-        self.home_btn = style.btn_style(self, 'Home', self.home_func_btn)
-        self.home_btn.place(x=555, y=23)
-
-        self.face_btn = style.btn_style(self, 'Face Recognize', self.face_func_btn)
-        self.face_btn.place(x=708, y=23)
-
-        self.about_btn = style.btn_style(self, 'About us', self.about_func_btn)
-        self.about_btn.place(x=861, y=23)
+        self.back_btn = style.btn_style(self, 'Back', self.back_func_btn)
+        self.back_btn.place(x=855.7, y=23.5)
 
         self.frame = ctk.CTkFrame(self, width=306, height=480, corner_radius=15)
         self.frame.place(x=690, y=98)
@@ -205,6 +198,9 @@ class register_window(ctk.CTkToplevel):
 
 
     def face_func_btn(self):
+        self.capture.release()
+        Face_Recognize.face_recog_window(ctk.CTkToplevel)
+        self.destroy()
         print("Face Recognize button just clicked")
 
     def about_func_btn(self):
@@ -213,7 +209,7 @@ class register_window(ctk.CTkToplevel):
     
 
     
-    def home_func_btn(self):
+    def back_func_btn(self):
         self.capture.release()
         self.destroy()
         print("Home button just clicked")

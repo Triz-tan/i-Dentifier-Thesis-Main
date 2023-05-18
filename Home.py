@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from PIL import Image, ImageTk
-import style_home
+import style_register as style
 import Face_Recognize
 import Register
 
@@ -18,20 +18,22 @@ class App:
         self.background_label = ctk.CTkLabel(self.root, image=self.background_image, text="")
         self.background_label.pack()
 
-        self.home_button = style_home.get_button_home(self.root, 'Home', self.home)
-        self.home_button.place(x=214, y=28)
+       
 
-        self.register_button = style_home.get_button_register(self.root, 'Register', self.register)
-        self.register_button.place(x=367, y=28)
+        self.register_button = style.btn_style(self.root, 'Register', self.register)
+        self.register_button.place(x=215, y=28)
 
-        self.recognize_button = style_home.get_button_recognize(self.root, 'Face Recognize', self.recognize)
-        self.recognize_button.place(x=520, y=28)
+        self.recognize_button = style.btn_style(self.root, 'Face Recognize', self.recognize)
+        self.recognize_button.place(x=368, y=28)
 
-        self.about_button = style_home.get_button_about(self.root, 'About Us', self.about)
-        self.about_button.place(x=673, y=28)
+        self.dtr_button = style.btn_style(self.root, 'DTR Download', self.dtr)
+        self.dtr_button.place(x=521.2, y=28)
+
+        self.about_button = style.btn_style(self.root, 'About us', self.about)
+        self.about_button.place(x=674.4, y=28)
 
 
-    def home(self):
+    def dtr(self):
         pass
 
     def register(self):
@@ -39,7 +41,7 @@ class App:
         
 
     def recognize(self):
-        Face_Recognize.Face_Recognition_Window(self.root).mainloop()
+        Face_Recognize.face_recog_window(self.root).mainloop()
        
     def about(self):
         pass
