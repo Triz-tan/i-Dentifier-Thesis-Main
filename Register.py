@@ -88,7 +88,6 @@ class register_window(ctk.CTkToplevel):
 
     def capture_func_btn(self):
         
-        
         user_id_value = self.user_entry.get() 
 
         ret, frame = self.capture.read()
@@ -149,13 +148,9 @@ class register_window(ctk.CTkToplevel):
             self.no_btn = style.frame_btn_style(self.photo_register, "No", self.no_func_btn)
             self.no_btn.place(x=118, y=466.7)
             
-            
-            
-            
         print("Capture function button just clicked")
 
         
-
     def yes_func_btn(self):
         user_id_value = self.user_entry.get()
         
@@ -189,14 +184,6 @@ class register_window(ctk.CTkToplevel):
         self.image_capture_label.image = None
         self.photo_register.destroy()
 
-
-       
-    
-
-
-
-
-
     def face_func_btn(self):
         self.capture.release()
         Face_Recognize.face_recog_window(ctk.CTkToplevel)
@@ -205,9 +192,6 @@ class register_window(ctk.CTkToplevel):
 
     def about_func_btn(self):
         print("About us button just clicked")
-
-    
-
     
     def back_func_btn(self):
         self.capture.release()
