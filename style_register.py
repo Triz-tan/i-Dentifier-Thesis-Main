@@ -21,7 +21,7 @@ def btn_style(master, text, command):
                         )
     return btn
 
-def capture_btn_style(master, text, command):
+def frame_btn_style(master, text, command):
     main_font = ctk.CTkFont(family="Poppins", size=14)
     btn = ctk.CTkButton(
                         master,
