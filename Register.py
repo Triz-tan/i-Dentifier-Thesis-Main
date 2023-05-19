@@ -3,7 +3,6 @@ import style_register as style
 import cv2
 from PIL import Image, ImageTk
 import os
-import tkinter
 from tkinter import messagebox
 import openpyxl
 import Face_Recognize
