@@ -196,7 +196,7 @@ class register_window(ctk.CTkToplevel):
     def back_func_btn(self):
         self.capture.release()
         self.destroy()
-        print("Home button just clicked")
+        print("Back button just clicked")
 
 if __name__ == "__main__":
     root = ctk.CTk()
