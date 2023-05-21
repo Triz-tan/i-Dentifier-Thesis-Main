@@ -4,6 +4,7 @@ import style_register as style
 import Face_Recognize
 import Register
 
+
 ctk.set_appearance_mode("dark")
 
 class App:

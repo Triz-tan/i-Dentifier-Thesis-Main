@@ -7,12 +7,13 @@ from PIL import Image, ImageTk
 import os
 import tkinter
 from tkinter import messagebox
+from datetime import datetime
 import openpyxl
-import Face_Recognize
+
 import face_recognition
 import pickle
 import numpy as np
-import cvzone
+
 
 class face_recog_window(ctk.CTkToplevel):
     def __init__(self, master):
@@ -24,6 +25,12 @@ class face_recog_window(ctk.CTkToplevel):
         
         self.back_btn = style.btn_style(self, 'Back', self.back_func_btn)
         self.back_btn.place(x=855.7, y=23.5)
+
+        self.arrival_btn = style.btn_style(self, 'Arrival', self.arrival_func)
+        self.arrival_btn.place(x=629.1, y=484.6)
+
+        self.departure_btn = style.btn_style(self, 'Departure', self.departure_func)
+        self.departure_btn.place(x=782.3, y=484.6)
 
         self.folderPath = 'test_images'
         self.PathList = os.listdir(self.folderPath)
@@ -65,11 +72,8 @@ class face_recog_window(ctk.CTkToplevel):
         #print(self.employee_id)
         print("Encode File Loaded")
 
-
-
-
         self.webcam_label = style.webcam_style_label(self)
-        self.webcam_label.place(x=28, y=96, width=600, height=480)
+        self.webcam_label.place(x=28, y=96, width=474.7, height=475.3)
 
         self.add_webcam(self.webcam_label)
 
@@ -83,41 +87,54 @@ class face_recog_window(ctk.CTkToplevel):
     def process_webcam(self):
         ret, frame = self.capture.read()
 
-        frame_copy = frame.copy()
-
         self.most_recent_capture_arr = frame
         self.img_ = cv2.cvtColor(self.most_recent_capture_arr, cv2.COLOR_BGR2RGB)
 
         self.faceCurFrame = face_recognition.face_locations(self.img_)
-        self.encodeCurFrame = face_recognition.face_encodings(self.img_, self.faceCurFrame)
-
-        for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
-            self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
-            self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
-
-            
-            
-            self.matchIndex = np.argmin(self.faceDis)
-           
-
-            if self.matches[self.matchIndex]:
-                #print("Known Face Detected")
-                print(self.employee_id[self.matchIndex])
-        
-           
-
-
-
+        self.encodeCurFrame = face_recognition.face_encodings(self.img_, self.faceCurFrame) 
         self.most_recent_capture_pil = Image.fromarray(self.img_)
         imgtk = ImageTk.PhotoImage(image=self.most_recent_capture_pil)
         self._label.imgtk = imgtk
         self._label.configure(image=imgtk)
         
-        self._label.after(20, self.process_webcam)
+        self._label.after(60, self.process_webcam)
 
 
 
-  
+    def arrival_func(self):
+
+       
+        
+        for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
+            self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
+            self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
+
+            self.matchIndex = np.argmin(self.faceDis)
+           
+            if self.matches[self.matchIndex]:
+                employee_id = self.employee_id[self.matchIndex]
+                self.attributes('-topmost', False)
+                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want to save the time?")
+                self.attributes('-topmost', True)
+                if result == 'yes':
+                    wb = openpyxl.load_workbook('Data.xlsx')
+                    ws = wb.active
+
+                    # Append a new row with the employee ID, date, and time
+                    row = [employee_id, datetime.now().strftime("%Y-%m-%d"), datetime.now().strftime("%H:%M:%S")]
+                    ws.append(row)
+                    wb.save('Data.xlsx')
+                    print("Date and time has saved")
+            else:
+                self.attributes('-topmost', False)
+                result = messagebox.showerror("No Face Match found")
+                self.attributes('-topmost', True)
+       
+        print("arrival button") 
+                
+
+    def departure_func(self):
+        print("departure button")
 
 
     def back_func_btn(self):
