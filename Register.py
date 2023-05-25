@@ -6,7 +6,6 @@ import os
 from tkinter import messagebox
 import openpyxl
 import Face_Recognize
-
 class register_window(ctk.CTkToplevel):
     
     def __init__(self, master):
@@ -14,6 +13,7 @@ class register_window(ctk.CTkToplevel):
         self.geometry("1024x600")
         self.title("Register")
         self.attributes('-topmost', True)
+        self.attributes('-fullscreen', True)
 
         self.register_label_heading = ctk.CTkLabel(self, text="Register", font=('Poppins', 24), text_color="white")
         self.register_label_heading.place(x=432.5, y=21.5)
@@ -39,7 +39,7 @@ class register_window(ctk.CTkToplevel):
         self.status_label = ctk.CTkLabel(self, text="Status", font=('Poppins', 12), text_color="white", bg_color="#2B2B2B")
         self.status_label.place(x=705, y=400)
 
-        self.name_entry = style.entry_style(self, "Enter your name")
+        self.name_entry = style.entry_style(self, "Enter your full name")
         self.name_entry.place(x=705, y=185.5)
 
         self.user_entry = style.entry_style(self, "Enter your user id")
@@ -94,22 +94,23 @@ class register_window(ctk.CTkToplevel):
             if not os.path.exists('test_images'):
                 os.makedirs('test_images')
             path_image = 'test_images/{}.jpg'.format(user_id_value) 
+
+            if os.path.exists(path_image):
+                self.attributes('-topmost', False)
+                messagebox.showerror('Error', "The ID is already used")
+                self.attributes('-topmost', True)
+                return
+
             cv2.imwrite(path_image, frame)
 
-            workbook = openpyxl.load_workbook("Data.xlsx")
-            worksheet = workbook.active
-            for row in worksheet.iter_rows(min_row=2, min_col=2, max_col=2):
-                if row[0].value == user_id_value:
-                    self.attributes('-topmost', False)
-                    messagebox.showerror("Duplicate ID", "The ID entered already exists")
-                    self.attributes('-topmost', True)
-                    return
+            
                 
             #Create a new window for registration of the images
             self.photo_register = ctk.CTkToplevel()
             self.photo_register.geometry("1024x600")
             self.photo_register.title("Photo Registration")
             self.photo_register.attributes('-topmost', True)
+            self.photo_register.attributes('-fullscreen', True) 
             self.attributes('-topmost', False)
             
             self.image_capture_label = ctk.CTkLabel(self.photo_register, text="")
@@ -160,8 +161,11 @@ class register_window(ctk.CTkToplevel):
         self.status = self.status_entry.get()
 
         workbook = openpyxl.load_workbook("Data.xlsx")
-        worksheet = workbook.active
+        worksheet = workbook.get_sheet_by_name("Personnel")
+        
+        
         row = worksheet.max_row + 1
+
         worksheet.cell(row=row, column=1, value=self.name)
         worksheet.cell(row=row, column=2, value=self.user_id)
         worksheet.cell(row=row, column=3, value=self.position)

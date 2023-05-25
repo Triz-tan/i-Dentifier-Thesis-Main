@@ -12,6 +12,7 @@ class App:
         self.root = ctk.CTk()
         self.root.geometry("1024x600")
         self.root.title('Home')
+        self.root.attributes('-fullscreen', True)
 
         self.get_image = Image.open("GUI_images/home_background.png")
         self.background_image = ImageTk.PhotoImage(self.get_image)

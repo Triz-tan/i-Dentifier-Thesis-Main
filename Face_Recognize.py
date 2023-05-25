@@ -1,15 +1,13 @@
 
 import customtkinter as ctk
-import style_face_recog as style_face
 import style_register as style
 import cv2
 from PIL import Image, ImageTk
 import os
-import tkinter
 from tkinter import messagebox
 from datetime import datetime
 import openpyxl
-
+from openpyxl import Workbook
 import face_recognition
 import pickle
 import numpy as np
@@ -21,16 +19,23 @@ class face_recog_window(ctk.CTkToplevel):
         self.geometry("1024x600")
         self.title("Face Recognition")
         self.attributes('-topmost', True)
+        self.attributes('-fullscreen', True)
 
         
         self.back_btn = style.btn_style(self, 'Back', self.back_func_btn)
         self.back_btn.place(x=855.7, y=23.5)
 
-        self.arrival_btn = style.btn_style(self, 'Arrival', self.arrival_func)
-        self.arrival_btn.place(x=629.1, y=484.6)
+        self.arrival_btn_AM = style.btn_style(self, 'Arrival AM', self.arrival_func_AM)
+        self.arrival_btn_AM.place(x=629.1, y=300)
 
-        self.departure_btn = style.btn_style(self, 'Departure', self.departure_func)
-        self.departure_btn.place(x=782.3, y=484.6)
+        self.departure_btn_AM = style.btn_style(self, 'Departure AM', self.departure_func_AM)
+        self.departure_btn_AM.place(x=782.3, y=300)
+
+        self.arrival_btn_PM = style.btn_style(self, 'Arrival PM', self.arrival_func_PM)
+        self.arrival_btn_PM.place(x=629.1, y=484.6)
+
+        self.departure_btn_PM = style.btn_style(self, 'Departure PM', self.departure_func_PM)
+        self.departure_btn_PM.place(x=782.3, y=484.6)
 
         self.folderPath = 'test_images'
         self.PathList = os.listdir(self.folderPath)
@@ -97,14 +102,12 @@ class face_recog_window(ctk.CTkToplevel):
         self._label.imgtk = imgtk
         self._label.configure(image=imgtk)
         
-        self._label.after(60, self.process_webcam)
+        self._label.after(20, self.process_webcam)
 
 
 
-    def arrival_func(self):
+    def arrival_func_AM(self):
 
-       
-        
         for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
             self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
             self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
@@ -114,27 +117,124 @@ class face_recog_window(ctk.CTkToplevel):
             if self.matches[self.matchIndex]:
                 employee_id = self.employee_id[self.matchIndex]
                 self.attributes('-topmost', False)
-                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want to save the time?")
+                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want your time in now?")
                 self.attributes('-topmost', True)
                 if result == 'yes':
-                    wb = openpyxl.load_workbook('Data.xlsx')
-                    ws = wb.active
+                    
+                    workbook = openpyxl.load_workbook("Data.xlsx")
+                    worksheet = workbook.get_sheet_by_name("Attendance")
 
-                    # Append a new row with the employee ID, date, and time
-                    row = [employee_id, datetime.now().strftime("%Y-%m-%d"), datetime.now().strftime("%H:%M:%S")]
-                    ws.append(row)
-                    wb.save('Data.xlsx')
-                    print("Date and time has saved")
+                    row = worksheet.max_row + 1
+                    now = datetime.now()
+                    
+                            
+                    worksheet.cell(row=row, column=1, value=employee_id)
+                    worksheet.cell(row=row, column=3, value=now.strftime("%m-%d-%Y"))
+                    worksheet.cell(row=row, column=4, value=now.strftime("%A"))
+                    worksheet.cell(row=row, column=5, value=now.strftime("%H:%M:%S"))
+
+                     
+                    workbook.save('Data.xlsx')  
+     
             else:
                 self.attributes('-topmost', False)
                 result = messagebox.showerror("No Face Match found")
                 self.attributes('-topmost', True)
        
-        print("arrival button") 
-                
+        print("Arrival AM just clicked")
 
-    def departure_func(self):
-        print("departure button")
+
+    def arrival_func_PM(self):          
+       
+        for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
+            self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
+            self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
+
+            self.matchIndex = np.argmin(self.faceDis)
+           
+            if self.matches[self.matchIndex]:
+                employee_id = self.employee_id[self.matchIndex]
+                self.attributes('-topmost', False)
+                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want to save your time in now?")
+                self.attributes('-topmost', True)
+                if result == 'yes':
+                    
+                    workbook = openpyxl.load_workbook("Data.xlsx")
+                    worksheet = workbook.get_sheet_by_name("Attendance")
+                    now = datetime.now()
+                    row = worksheet.max_row
+                    worksheet.cell(row=row, column=1, value=employee_id)
+                    worksheet.cell(row=row, column=3, value=now.strftime("%m-%d-%Y"))
+                    worksheet.cell(row=row, column=4, value=now.strftime("%A"))
+
+                    worksheet.cell(row=row, column=7, value=now.strftime("%H:%M:%S"))
+
+                    workbook.save('Data.xlsx')  
+            else:
+                self.attributes('-topmost', False)
+                result = messagebox.showerror("No Face Match found")
+                self.attributes('-topmost', True)
+        print("Arrival PM just clicked")
+
+
+    def departure_func_AM(self):
+        for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
+            self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
+            self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
+
+            self.matchIndex = np.argmin(self.faceDis)
+           
+            if self.matches[self.matchIndex]:
+                employee_id = self.employee_id[self.matchIndex]
+                self.attributes('-topmost', False)
+                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want to save your time in now?")
+                self.attributes('-topmost', True)
+                if result == 'yes':
+                    
+                    workbook = openpyxl.load_workbook("Data.xlsx")
+                    worksheet = workbook.get_sheet_by_name("Attendance")
+                    now = datetime.now()
+                    row = worksheet.max_row
+
+                    worksheet.cell(row=row, column=6, value=now.strftime("%H:%M:%S"))
+
+                    workbook.save('Data.xlsx')  
+            else:
+                self.attributes('-topmost', False)
+                result = messagebox.showerror("No Face Match found")
+                self.attributes('-topmost', True)
+        
+
+        print("Departure AM just clicked")
+
+    def departure_func_PM(self):
+        for encodeFace, faceLoc in zip(self.encodeCurFrame, self.faceCurFrame):
+            self.matches = face_recognition.compare_faces(self.encodeListKnown, encodeFace)
+            self.faceDis = face_recognition.face_distance(self.encodeListKnown, encodeFace)
+
+            self.matchIndex = np.argmin(self.faceDis)
+           
+            if self.matches[self.matchIndex]:
+                employee_id = self.employee_id[self.matchIndex]
+                self.attributes('-topmost', False)
+                result = messagebox.askquestion("Match Found", f"Employee ID: {employee_id}\nDo you want to save your time in now?")
+                self.attributes('-topmost', True)
+                if result == 'yes':
+                    
+                    workbook = openpyxl.load_workbook("Data.xlsx")
+                    worksheet = workbook.get_sheet_by_name("Attendance")
+                    now = datetime.now()
+                    row = worksheet.max_row
+                    worksheet.cell(row=row, column=8, value=now.strftime("%H:%M:%S"))
+
+                    workbook.save('Data.xlsx')  
+            else:
+                self.attributes('-topmost', False)
+                result = messagebox.showerror("No Face Match found")
+                self.attributes('-topmost', True)
+        
+
+        print("Departure PM just clicked")
 
 
     def back_func_btn(self):
